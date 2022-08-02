@@ -1,0 +1,545 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_db_instance.able-db will be created
+  + resource "aws_db_instance" "able-db" {
+      + address                               = (known after apply)
+      + allocated_storage                     = 5
+      + apply_immediately                     = (known after apply)
+      + arn                                   = (known after apply)
+      + auto_minor_version_upgrade            = true
+      + availability_zone                     = (known after apply)
+      + backup_retention_period               = 1
+      + backup_window                         = (known after apply)
+      + ca_cert_identifier                    = (known after apply)
+      + character_set_name                    = (known after apply)
+      + copy_tags_to_snapshot                 = false
+      + db_name                               = (known after apply)
+      + db_subnet_group_name                  = (known after apply)
+      + delete_automated_backups              = true
+      + endpoint                              = (known after apply)
+      + engine                                = "postgres"
+      + engine_version                        = "13.4"
+      + engine_version_actual                 = (known after apply)
+      + hosted_zone_id                        = (known after apply)
+      + id                                    = (known after apply)
+      + identifier                            = "able-database"
+      + identifier_prefix                     = (known after apply)
+      + instance_class                        = "db.m5.large"
+      + kms_key_id                            = (known after apply)
+      + latest_restorable_time                = (known after apply)
+      + license_model                         = (known after apply)
+      + maintenance_window                    = (known after apply)
+      + monitoring_interval                   = 0
+      + monitoring_role_arn                   = (known after apply)
+      + multi_az                              = (known after apply)
+      + name                                  = (known after apply)
+      + nchar_character_set_name              = (known after apply)
+      + option_group_name                     = (known after apply)
+      + parameter_group_name                  = (known after apply)
+      + password                              = (sensitive value)
+      + performance_insights_enabled          = false
+      + performance_insights_kms_key_id       = (known after apply)
+      + performance_insights_retention_period = (known after apply)
+      + port                                  = (known after apply)
+      + publicly_accessible                   = false
+      + replica_mode                          = (known after apply)
+      + replicas                              = (known after apply)
+      + resource_id                           = (known after apply)
+      + skip_final_snapshot                   = true
+      + snapshot_identifier                   = (known after apply)
+      + status                                = (known after apply)
+      + storage_type                          = (known after apply)
+      + tags_all                              = (known after apply)
+      + timezone                              = (known after apply)
+      + username                              = "admin"
+      + vpc_security_group_ids                = (known after apply)
+    }
+
+  # aws_ecr_repository.able-ecr will be created
+  + resource "aws_ecr_repository" "able-ecr" {
+      + arn                  = (known after apply)
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "able-ecr-repo"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags                 = {
+          + "Name" = "able-ecr"
+        }
+      + tags_all             = {
+          + "Name" = "able-ecr"
+        }
+    }
+
+  # aws_ecs_cluster.able-ecs-cluster will be created
+  + resource "aws_ecs_cluster" "able-ecs-cluster" {
+      + arn                = (known after apply)
+      + capacity_providers = (known after apply)
+      + id                 = (known after apply)
+      + name               = "able-ecs"
+      + tags_all           = (known after apply)
+
+      + default_capacity_provider_strategy {
+          + base              = (known after apply)
+          + capacity_provider = (known after apply)
+          + weight            = (known after apply)
+        }
+
+      + setting {
+          + name  = "containerInsights"
+          + value = "enabled"
+        }
+    }
+
+  # aws_ecs_service.able-service will be created
+  + resource "aws_ecs_service" "able-service" {
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 100
+      + desired_count                      = 2
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "EC2"
+      + name                               = "able-service"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags_all                           = (known after apply)
+      + task_definition                    = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "able-ecs-container"
+          + container_port   = 8080
+          + target_group_arn = (known after apply)
+        }
+
+      + network_configuration {
+          + assign_public_ip = false
+          + security_groups  = (known after apply)
+          + subnets          = [
+              + "subnet-f527b490",
+            ]
+        }
+    }
+
+  # aws_ecs_task_definition.able-task-definition will be created
+  + resource "aws_ecs_task_definition" "able-task-definition" {
+      + arn                      = (known after apply)
+      + container_definitions    = jsonencode(
+            [
+              + {
+                  + cpu          = 512
+                  + essential    = true
+                  + image        = "983808592101.dkr.ecr.us-east-1.amazonaws.com/nginx:latest"
+                  + memory       = 1024
+                  + name         = "able-app-ecs-container"
+                  + portMappings = [
+                      + {
+                          + containerPort = 80
+                          + hostPort      = 80
+                        },
+                    ]
+                },
+            ]
+        )
+      + cpu                      = "512"
+      + execution_role_arn       = "arn:aws:iam::983808592101:role/ecsTaskExecutionRole"
+      + family                   = "able_task_definition"
+      + id                       = (known after apply)
+      + memory                   = "1024"
+      + network_mode             = (known after apply)
+      + requires_compatibilities = [
+          + "EC2",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags_all                 = (known after apply)
+      + task_role_arn            = "arn:aws:iam::983808592101:role/ecsTaskExecutionRole"
+    }
+
+  # aws_iam_instance_profile.ecs_agent will be created
+  + resource "aws_iam_instance_profile" "ecs_agent" {
+      + arn         = (known after apply)
+      + create_date = (known after apply)
+      + id          = (known after apply)
+      + name        = "ecs-agent"
+      + path        = "/"
+      + role        = "ecs-agent"
+      + tags_all    = (known after apply)
+      + unique_id   = (known after apply)
+    }
+
+  # aws_iam_role.ecs_agent will be created
+  + resource "aws_iam_role" "ecs_agent" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = "ec2.amazonaws.com"
+                        }
+                      + Sid       = ""
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "ecs-agent"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags_all              = (known after apply)
+      + unique_id             = (known after apply)
+
+      + inline_policy {
+          + name   = (known after apply)
+          + policy = (known after apply)
+        }
+    }
+
+  # aws_iam_role_policy_attachment.ecs_agent will be created
+  + resource "aws_iam_role_policy_attachment" "ecs_agent" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+      + role       = "ecs-agent"
+    }
+
+  # aws_instance.ec2_able_instance will be created
+  + resource "aws_instance" "ec2_able_instance" {
+      + ami                                  = "ami-06640050dc3f556bb"
+      + arn                                  = (known after apply)
+      + associate_public_ip_address          = (known after apply)
+      + availability_zone                    = (known after apply)
+      + cpu_core_count                       = (known after apply)
+      + cpu_threads_per_core                 = (known after apply)
+      + disable_api_stop                     = (known after apply)
+      + disable_api_termination              = (known after apply)
+      + ebs_optimized                        = false
+      + get_password_data                    = false
+      + host_id                              = (known after apply)
+      + iam_instance_profile                 = (known after apply)
+      + id                                   = (known after apply)
+      + instance_initiated_shutdown_behavior = (known after apply)
+      + instance_state                       = (known after apply)
+      + instance_type                        = "t2.micro"
+      + ipv6_address_count                   = (known after apply)
+      + ipv6_addresses                       = (known after apply)
+      + key_name                             = (known after apply)
+      + monitoring                           = (known after apply)
+      + outpost_arn                          = (known after apply)
+      + password_data                        = (known after apply)
+      + placement_group                      = (known after apply)
+      + placement_partition_number           = (known after apply)
+      + primary_network_interface_id         = (known after apply)
+      + private_dns                          = (known after apply)
+      + private_ip                           = (known after apply)
+      + public_dns                           = (known after apply)
+      + public_ip                            = (known after apply)
+      + secondary_private_ips                = (known after apply)
+      + security_groups                      = (known after apply)
+      + source_dest_check                    = false
+      + subnet_id                            = (known after apply)
+      + tags_all                             = (known after apply)
+      + tenancy                              = (known after apply)
+      + user_data                            = "1fb172bb25c977ff4874a1a2723ee2bc1648ce74"
+      + user_data_base64                     = (known after apply)
+      + user_data_replace_on_change          = false
+      + vpc_security_group_ids               = (known after apply)
+
+      + capacity_reservation_specification {
+          + capacity_reservation_preference = (known after apply)
+
+          + capacity_reservation_target {
+              + capacity_reservation_id                 = (known after apply)
+              + capacity_reservation_resource_group_arn = (known after apply)
+            }
+        }
+
+      + ebs_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + snapshot_id           = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+
+      + enclave_options {
+          + enabled = (known after apply)
+        }
+
+      + ephemeral_block_device {
+          + device_name  = (known after apply)
+          + no_device    = (known after apply)
+          + virtual_name = (known after apply)
+        }
+
+      + maintenance_options {
+          + auto_recovery = (known after apply)
+        }
+
+      + metadata_options {
+          + http_endpoint               = (known after apply)
+          + http_put_response_hop_limit = (known after apply)
+          + http_tokens                 = (known after apply)
+          + instance_metadata_tags      = (known after apply)
+        }
+
+      + network_interface {
+          + delete_on_termination = (known after apply)
+          + device_index          = (known after apply)
+          + network_card_index    = (known after apply)
+          + network_interface_id  = (known after apply)
+        }
+
+      + private_dns_name_options {
+          + enable_resource_name_dns_a_record    = (known after apply)
+          + enable_resource_name_dns_aaaa_record = (known after apply)
+          + hostname_type                        = (known after apply)
+        }
+
+      + root_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+    }
+
+  # aws_key_pair.able-ecs-ec2-key-pair will be created
+  + resource "aws_key_pair" "able-ecs-ec2-key-pair" {
+      + arn             = (known after apply)
+      + fingerprint     = (known after apply)
+      + id              = (known after apply)
+      + key_name        = "able-ecs-ec2-key-pem"
+      + key_name_prefix = (known after apply)
+      + key_pair_id     = (known after apply)
+      + key_type        = (known after apply)
+      + public_key      = (known after apply)
+      + tags_all        = (known after apply)
+    }
+
+  # aws_lb.able-lb will be created
+  + resource "aws_lb" "able-lb" {
+      + arn                        = (known after apply)
+      + arn_suffix                 = (known after apply)
+      + desync_mitigation_mode     = "defensive"
+      + dns_name                   = (known after apply)
+      + drop_invalid_header_fields = false
+      + enable_deletion_protection = false
+      + enable_http2               = true
+      + enable_waf_fail_open       = false
+      + id                         = (known after apply)
+      + idle_timeout               = 60
+      + internal                   = false
+      + ip_address_type            = (known after apply)
+      + load_balancer_type         = "application"
+      + name                       = "able-lb"
+      + security_groups            = (known after apply)
+      + subnets                    = (known after apply)
+      + tags_all                   = (known after apply)
+      + vpc_id                     = (known after apply)
+      + zone_id                    = (known after apply)
+
+      + subnet_mapping {
+          + allocation_id        = (known after apply)
+          + ipv6_address         = (known after apply)
+          + outpost_id           = (known after apply)
+          + private_ipv4_address = (known after apply)
+          + subnet_id            = (known after apply)
+        }
+    }
+
+  # aws_lb_listener.lb_listener will be created
+  + resource "aws_lb_listener" "lb_listener" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + load_balancer_arn = (known after apply)
+      + port              = 80
+      + protocol          = "HTTP"
+      + ssl_policy        = (known after apply)
+      + tags_all          = (known after apply)
+
+      + default_action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+    }
+
+  # aws_lb_target_group.able-tg will be created
+  + resource "aws_lb_target_group" "able-tg" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = false
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancing_algorithm_type      = (known after apply)
+      + name                               = "able-tg"
+      + port                               = 80
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 0
+      + tags_all                           = (known after apply)
+      + target_type                        = "instance"
+      + vpc_id                             = "vpc-480bb82c"
+
+      + health_check {
+          + enabled             = (known after apply)
+          + healthy_threshold   = (known after apply)
+          + interval            = (known after apply)
+          + matcher             = (known after apply)
+          + path                = (known after apply)
+          + port                = (known after apply)
+          + protocol            = (known after apply)
+          + timeout             = (known after apply)
+          + unhealthy_threshold = (known after apply)
+        }
+
+      + stickiness {
+          + cookie_duration = (known after apply)
+          + cookie_name     = (known after apply)
+          + enabled         = (known after apply)
+          + type            = (known after apply)
+        }
+    }
+
+  # aws_security_group.able-sg will be created
+  + resource "aws_security_group" "able-sg" {
+      + arn                    = (known after apply)
+      + description            = "Security group for app solution devops"
+      + egress                 = (known after apply)
+      + id                     = (known after apply)
+      + ingress                = (known after apply)
+      + name                   = "able-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "able-sg"
+        }
+      + tags_all               = {
+          + "Name" = "able-sg"
+        }
+      + vpc_id                 = "vpc-480bb82c"
+    }
+
+  # aws_security_group_rule.able-db will be created
+  + resource "aws_security_group_rule" "able-db" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + from_port                = 5432
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 5432
+      + type                     = "ingress"
+    }
+
+  # aws_security_group_rule.app-outbound will be created
+  + resource "aws_security_group_rule" "app-outbound" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + from_port                = 0
+      + id                       = (known after apply)
+      + protocol                 = "-1"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 0
+      + type                     = "egress"
+    }
+
+  # aws_security_group_rule.app-web-ingress will be created
+  + resource "aws_security_group_rule" "app-web-ingress" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + from_port                = 8080
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 8081
+      + type                     = "ingress"
+    }
+
+  # aws_security_group_rule.http-web-ingress will be created
+  + resource "aws_security_group_rule" "http-web-ingress" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + from_port                = 80
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 80
+      + type                     = "ingress"
+    }
+
+  # aws_security_group_rule.ssh-ingress will be created
+  + resource "aws_security_group_rule" "ssh-ingress" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + from_port                = 22
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 22
+      + type                     = "ingress"
+    }
+
+  # tls_private_key.able-ecs-ec2-key will be created
+  + resource "tls_private_key" "able-ecs-ec2-key" {
+      + algorithm                     = "RSA"
+      + ecdsa_curve                   = "P224"
+      + id                            = (known after apply)
+      + private_key_openssh           = (sensitive value)
+      + private_key_pem               = (sensitive value)
+      + private_key_pem_pkcs8         = (sensitive value)
+      + public_key_fingerprint_md5    = (known after apply)
+      + public_key_fingerprint_sha256 = (known after apply)
+      + public_key_openssh            = (known after apply)
+      + public_key_pem                = (known after apply)
+      + rsa_bits                      = 4096
+    }
+
+Plan: 20 to add, 0 to change, 0 to destroy.
